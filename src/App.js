@@ -1,24 +1,79 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useReducer } from 'react';
+
+import API, { graphqlOperation } from '@aws-amplify/api';
+import PubSub from '@aws-amplify/pubsub';
+
+import { createBookmark } from './graphql/mutations';
+import { listBookmarks } from './graphql/queries';
+import { onCreateBookmark } from './graphql/subscriptions';
+
+
+import awsconfig from './aws-exports';
 import './App.css';
 
+// Action Types
+const QUERY = 'QUERY';
+const SUBSCRIPTION = 'SUBSCRIPTION';
+
+
+// Configure Amplify
+API.configure(awsconfig);
+PubSub.configure(awsconfig);
+
+
+const initialState = {
+  bookmarks: [],
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case QUERY:
+      return {...state, bookmarks: action.bookmarks};
+    case SUBSCRIPTION:
+      return {...state, bookmarks:[...state.bookmarks, action.bookmark]};
+    default:
+      return state;
+  }
+};
+
+async function createNewBookmark() {
+  const bookmark = { url: "https://www.google.com" , description: "Google search engine" };
+  await API.graphql(graphqlOperation(createBookmark, { input: bookmark }));
+}
+
 function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    async function getData() {
+      const bookmarksData = await API.graphql(graphqlOperation(listBookmarks));
+      dispatch({ type: QUERY, bookmarks: bookmarksData.data.listBookmarks.items });
+    }
+    getData();
+
+    const subscription = API.graphql(graphqlOperation(onCreateBookmark)).subscribe({
+      next: (eventData) => {
+        const bookmark = eventData.value.data.onCreateBookmark;
+        dispatch({ type: SUBSCRIPTION, bookmark });
+      }
+    });
+    return () => subscription.unsubscribe();
+
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload. Make Changes.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <div className="App">
+        <button onClick={createNewBookmark}>Add Bookmark</button>
+      </div>
+      <div>
+        {state.bookmarks.length > 0 ? 
+          state.bookmarks.map((bookmark) => 
+            <p key={bookmark.id}>{bookmark.url} : {bookmark.description}</p>
+          ) :
+          <p>Add more bookmarks!</p> 
+        }
+      </div>
     </div>
   );
 }
