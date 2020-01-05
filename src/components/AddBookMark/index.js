@@ -25,8 +25,8 @@ const AddBookMark = (props) => {
 
     const saveChanges = () => {
         const bookmark = { url: bookmarkUrl , description: bookmarkDescription, tags: selectedItems.map(item => item.value)};        
-        console.log(JSON.stringify(bookmark));
-        //props.onSave(bookmark);
+        setSelectedItems([]);
+        props.onSave(bookmark);
     }
 
     return (

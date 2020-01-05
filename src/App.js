@@ -39,7 +39,6 @@ const reducer = (state, action) => {
 };
 
 async function createNewBookmark(bookmark) {
-  // const bookmark = { url: "https://www.google.com" , description: "Google search engine" };
   await API.graphql(graphqlOperation(createBookmark, { input: bookmark }));
 }
 
@@ -48,7 +47,10 @@ function App() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
+  const handleSave = async (bookmark) => {    
+    await createNewBookmark(bookmark);
+    setShow(false);
+  }
 
   useEffect(() => {
     async function getData() {
@@ -71,7 +73,7 @@ function App() {
     <div>
       <div className="App">
         <button onClick={handleShow}>Add Bookmark</button>
-        <AddBookMark show={show} onHide={handleClose} createBookmark={createNewBookmark}/>
+        <AddBookMark show={show} onHide={handleClose} onSave={handleSave}/>
       </div>
       <div>
         {state.bookmarks.length > 0 ? 
