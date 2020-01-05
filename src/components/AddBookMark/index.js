@@ -23,6 +23,11 @@ const AddBookMark = (props) => {
         setBookmarkDescription(e.target.value);
     }
 
+    const cancelChanges = () => {
+        setSelectedItems([]);
+        props.onHide();
+    }
+
     const saveChanges = () => {
         const bookmark = { url: bookmarkUrl , description: bookmarkDescription, tags: selectedItems.map(item => item.value)};        
         setSelectedItems([]);
@@ -58,7 +63,7 @@ const AddBookMark = (props) => {
             </Modal.Body>
 
             <Modal.Footer>
-                <Button variant="secondary" onClick={props.onHide}>
+                <Button variant="secondary" onClick={cancelChanges}>
                     Close
                 </Button>
                 <Button variant="primary" onClick={saveChanges}>
