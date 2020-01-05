@@ -1,0 +1,20 @@
+.bookmark-container {
+    padding-left: 20px;
+}
+
+.tag {
+    padding: 1px 2px;
+    background-color: #e3e3e3;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.tags-list {
+    display: flex;
+
+}
+
+.urlContainer {
+    font-size: 12px;
+    margin-right: 10px;
+}

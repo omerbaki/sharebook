@@ -8,6 +8,7 @@ import { listBookmarks } from './graphql/queries';
 import { onCreateBookmark } from './graphql/subscriptions';
 
 import AddBookMark from './components/AddBookMark';
+import BookMark from './components/BookMark';
 
 import awsconfig from './aws-exports';
 import './App.css';
@@ -77,8 +78,8 @@ function App() {
       </div>
       <div>
         {state.bookmarks.length > 0 ? 
-          state.bookmarks.map((bookmark) => 
-            <p key={bookmark.id}>{bookmark.url} : {bookmark.description}</p>
+          state.bookmarks.map((bm) => 
+            <BookMark bookmark={bm} />
           ) :
           <p>Add more bookmarks!</p> 
         }
