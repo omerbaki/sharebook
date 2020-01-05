@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 
 import API, { graphqlOperation } from '@aws-amplify/api';
 import PubSub from '@aws-amplify/pubsub';
@@ -7,6 +7,7 @@ import { createBookmark } from './graphql/mutations';
 import { listBookmarks } from './graphql/queries';
 import { onCreateBookmark } from './graphql/subscriptions';
 
+import AddBookMark from './components/AddBookMark';
 
 import awsconfig from './aws-exports';
 import './App.css';
@@ -24,6 +25,7 @@ PubSub.configure(awsconfig);
 const initialState = {
   bookmarks: [],
 };
+
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -43,6 +45,10 @@ async function createNewBookmark() {
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
 
   useEffect(() => {
     async function getData() {
@@ -64,7 +70,8 @@ function App() {
   return (
     <div>
       <div className="App">
-        <button onClick={createNewBookmark}>Add Bookmark</button>
+        <button onClick={handleShow}>Add Bookmark</button>
+        <AddBookMark show={show} onHide={handleClose} />
       </div>
       <div>
         {state.bookmarks.length > 0 ? 
