@@ -38,8 +38,8 @@ const reducer = (state, action) => {
   }
 };
 
-async function createNewBookmark() {
-  const bookmark = { url: "https://www.google.com" , description: "Google search engine" };
+async function createNewBookmark(bookmark) {
+  // const bookmark = { url: "https://www.google.com" , description: "Google search engine" };
   await API.graphql(graphqlOperation(createBookmark, { input: bookmark }));
 }
 
@@ -71,7 +71,7 @@ function App() {
     <div>
       <div className="App">
         <button onClick={handleShow}>Add Bookmark</button>
-        <AddBookMark show={show} onHide={handleClose} />
+        <AddBookMark show={show} onHide={handleClose} createBookmark={createNewBookmark}/>
       </div>
       <div>
         {state.bookmarks.length > 0 ? 
