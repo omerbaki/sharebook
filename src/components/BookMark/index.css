@@ -1,11 +1,11 @@
 .bookmark-container {
-    padding-left: 20px;
+    padding: 5px;
 }
 
 .tag {
     padding: 1px 2px;
     background-color: #e3e3e3;
-    font-size: 12px;
+    font-size: 11px;
     margin-right: 5px;
 }
 
@@ -15,6 +15,11 @@
 }
 
 .urlContainer {
-    font-size: 12px;
+    font-size: 11px;
     margin-right: 10px;
+}
+
+.delete-btn {
+    font-size: 11px;
+    padding: 2px;
 }

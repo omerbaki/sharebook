@@ -1,18 +1,26 @@
 import React from 'react';
+import { Button } from 'react-bootstrap';
 import './index.css';
 
 const BookMark = (props) => {
+    const deleteBookmark = () => {
+        props.onDelete(props.bookmark);
+    }
+
     return (
-        <div class="bookmark-container">
+        <div className="bookmark-container">
             <a href={props.bookmark.url}>{props.bookmark.description}</a>
-            <div class="tags-list">
-                <div class="urlContainer"><span>{props.bookmark.url}</span></div>
+            <div className="tags-list">
+                <div className="urlContainer"><span>{props.bookmark.url}</span></div>
                 {props.bookmark.tags ?
                     props.bookmark.tags.map((tag) =>
-                        <div class="tag"><span>{tag}</span></div>
+                        <div key={props.bookmark.id + "_" + tag} className="tag"><span>{tag}</span></div>
                     ) : <div />
                 }
             </div>
+            <Button className="delete-btn" onClick={deleteBookmark}>
+                delete
+            </Button>
         </div>
     );
 }

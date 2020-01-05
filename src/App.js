@@ -3,9 +3,9 @@ import React, { useState, useEffect, useReducer } from 'react';
 import API, { graphqlOperation } from '@aws-amplify/api';
 import PubSub from '@aws-amplify/pubsub';
 
-import { createBookmark } from './graphql/mutations';
+import { createBookmark, deleteBookmark } from './graphql/mutations';
 import { listBookmarks } from './graphql/queries';
-import { onCreateBookmark } from './graphql/subscriptions';
+import { onCreateBookmark, onDeleteBookmark } from './graphql/subscriptions';
 
 import AddBookMark from './components/AddBookMark';
 import BookMark from './components/BookMark';
@@ -15,8 +15,8 @@ import './App.css';
 
 // Action Types
 const QUERY = 'QUERY';
-const SUBSCRIPTION = 'SUBSCRIPTION';
-
+const CREATE_BOOKMARK = 'CREATE_BOOKMARK';
+const DELETE_BOOKMARK = 'DELETE_BOOKMARK';
 
 // Configure Amplify
 API.configure(awsconfig);
@@ -32,8 +32,10 @@ const reducer = (state, action) => {
   switch (action.type) {
     case QUERY:
       return {...state, bookmarks: action.bookmarks};
-    case SUBSCRIPTION:
+    case CREATE_BOOKMARK:
       return {...state, bookmarks:[...state.bookmarks, action.bookmark]};
+    case DELETE_BOOKMARK: 
+      return {...state,  bookmarks: state.bookmarks.filter(bookmark => bookmark.id !== action.bookmark.id)};
     default:
       return state;
   }
@@ -41,6 +43,15 @@ const reducer = (state, action) => {
 
 async function createNewBookmark(bookmark) {
   await API.graphql(graphqlOperation(createBookmark, { input: bookmark }));
+}
+
+async function deleteExistingBookmark(bookmark) {
+  try {
+    const bookmarkToDelete = {id: bookmark.id};
+    await API.graphql(graphqlOperation(deleteBookmark, { input: bookmarkToDelete }));
+  } catch(err) {
+    console.log(JSON.stringify(err));
+  }
 }
 
 function App() {
@@ -52,6 +63,9 @@ function App() {
     await createNewBookmark(bookmark);
     setShow(false);
   }
+  const handleDelete = async (bookmark) => {
+    await deleteExistingBookmark(bookmark);
+  }
 
   useEffect(() => {
     async function getData() {
@@ -60,13 +74,25 @@ function App() {
     }
     getData();
 
-    const subscription = API.graphql(graphqlOperation(onCreateBookmark)).subscribe({
+    const createSubscription = API.graphql(graphqlOperation(onCreateBookmark)).subscribe({
       next: (eventData) => {
         const bookmark = eventData.value.data.onCreateBookmark;
-        dispatch({ type: SUBSCRIPTION, bookmark });
+        dispatch({ type: CREATE_BOOKMARK, bookmark });
       }
     });
-    return () => subscription.unsubscribe();
+
+    const deleteSubscription = API.graphql(graphqlOperation(onDeleteBookmark)).subscribe({
+      next: (eventData) => {
+        const bookmark = eventData.value.data.onDeleteBookmark;
+        dispatch({ type: DELETE_BOOKMARK, bookmark });
+      }
+    });
+
+
+    return () => {
+      createSubscription.unsubscribe();
+      deleteSubscription.unsubscribe();
+    }
 
   }, []);
 
@@ -79,7 +105,7 @@ function App() {
       <div>
         {state.bookmarks.length > 0 ? 
           state.bookmarks.map((bm) => 
-            <BookMark bookmark={bm} />
+            <BookMark  key={bm.id} bookmark={bm} onDelete={handleDelete}/>
           ) :
           <p>Add more bookmarks!</p> 
         }
