@@ -7,6 +7,8 @@ import { createBookmark, deleteBookmark, createTag } from './graphql/mutations';
 import { listBookmarks, listTags } from './graphql/queries';
 import { onCreateBookmark, onDeleteBookmark, onCreateTag } from './graphql/subscriptions';
 
+import { reducer, ACTIONS } from './state/reducer';
+
 import AddBookMark from './components/AddBookMark';
 import AddTag from './components/AddTag';
 import BookMark from './components/BookMark';
@@ -14,12 +16,7 @@ import BookMark from './components/BookMark';
 import awsconfig from './aws-exports';
 import './App.css';
 
-// Action Types
-const QUERY_TAG = "QUERY_TAG";
-const CREATE_TAG = "CREATE_TAG";
-const QUERY_BOOKMARK = 'QUERY_BOOKMARK';
-const CREATE_BOOKMARK = 'CREATE_BOOKMARK';
-const DELETE_BOOKMARK = 'DELETE_BOOKMARK';
+import sharebookImg from './sharebook.png'
 
 // Configure Amplify
 API.configure(awsconfig);
@@ -28,23 +25,6 @@ PubSub.configure(awsconfig);
 const initialState = {
   tags: [],
   bookmarks: [],
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case QUERY_BOOKMARK:
-      return { ...state, bookmarks: action.bookmarks };
-    case CREATE_BOOKMARK:
-      return { ...state, bookmarks: [...state.bookmarks, action.bookmark] };
-    case DELETE_BOOKMARK:
-      return { ...state, bookmarks: state.bookmarks.filter(bookmark => bookmark.id !== action.bookmark.id) };
-    case QUERY_TAG:
-      return { ...state, tags: action.tags };
-    case CREATE_TAG:
-      return { ...state, tags: [...state.tags, action.tag] };
-    default:
-      return state;
-  }
 };
 
 async function createNewBookmark(bookmark) {
@@ -90,34 +70,34 @@ function App() {
   useEffect(() => {
     async function getTags() {
       const tagsData = await API.graphql(graphqlOperation(listTags));
-      dispatch({ type: QUERY_TAG, tags: tagsData.data.listTags.items });
+      dispatch({ type: ACTIONS.QUERY_TAG, tags: tagsData.data.listTags.items });
     }
     getTags();
 
     async function getBookmarks() {
       const bookmarksData = await API.graphql(graphqlOperation(listBookmarks));
-      dispatch({ type: QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
+      dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
     }
     getBookmarks();
 
     const createSubscription = API.graphql(graphqlOperation(onCreateBookmark)).subscribe({
       next: (eventData) => {
         const bookmark = eventData.value.data.onCreateBookmark;
-        dispatch({ type: CREATE_BOOKMARK, bookmark });
+        dispatch({ type: ACTIONS.CREATE_BOOKMARK, bookmark });
       }
     });
 
     const deleteSubscription = API.graphql(graphqlOperation(onDeleteBookmark)).subscribe({
       next: (eventData) => {
         const bookmark = eventData.value.data.onDeleteBookmark;
-        dispatch({ type: DELETE_BOOKMARK, bookmark });
+        dispatch({ type: ACTIONS.DELETE_BOOKMARK, bookmark });
       }
     });
 
     const createTagSubscription = API.graphql(graphqlOperation(onCreateTag)).subscribe({
       next: (eventData) => {
         const tag = eventData.value.data.onCreateTag;
-        dispatch({ type: CREATE_TAG, tag });
+        dispatch({ type: ACTIONS.CREATE_TAG, tag });
       }
     });
 
@@ -130,20 +110,31 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <div className="App">
-        <button onClick={handleShowAddBookmark}>Add Bookmark</button>
-        <AddBookMark show={showAddBookmark} onHide={handleCloseAddBookmark} onSave={handleSaveBookmark} tags={state.tags} />
-        <button onClick={handleShowAddTag}>Add Tag</button>
-        <AddTag show={showAddTag} onHide={handleCloseAddTag} onSave={handleSaveTag} />
+    <div className="app-container">
+      <div className="App-Logo">
+        <img src={sharebookImg} />
       </div>
-      <div>
-        {state.bookmarks.length > 0 ?
-          state.bookmarks.map((bm) =>
-            <BookMark key={bm.id} bookmark={bm} onDelete={handleDelete} />
-          ) :
-          <p>Add more bookmarks!</p>
-        }
+      <div className="bookmarks-container">
+        <div className="settings-container">
+          <div className="search-container">
+            <input type="text" className="form-control"
+              onChange={e => console.log(e)} placeholder="Search..." />
+          </div>
+          <div className="add-buttons">
+            <button onClick={handleShowAddBookmark}>Add Bookmark</button>
+            <AddBookMark show={showAddBookmark} onHide={handleCloseAddBookmark} onSave={handleSaveBookmark} tags={state.tags} />
+            <button onClick={handleShowAddTag}>Add Tag</button>
+            <AddTag show={showAddTag} onHide={handleCloseAddTag} onSave={handleSaveTag} />
+          </div>
+        </div>
+        <div>
+          {state.bookmarks.length > 0 ?
+            state.bookmarks.map((bm) =>
+              <BookMark key={bm.id} bookmark={bm} onDelete={handleDelete} />
+            ) :
+            <p>Add more bookmarks!</p>
+          }
+        </div>
       </div>
     </div>
   );

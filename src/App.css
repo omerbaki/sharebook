@@ -1,10 +1,14 @@
+.app-container {
+  display: flex;
+  flex-direction: row;
+}
+
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.App-Logo {
+  padding: 10px 30px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -35,4 +39,22 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.bookmarks-container {
+  margin-top: 30px;
+  width: 100%;
+  
+}
+
+.settings-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.search-container {
+  width: 500px;
+}
+
+.add-buttons {
 }
