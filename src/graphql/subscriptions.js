@@ -28,3 +28,27 @@ export const onDeleteBookmark = `subscription OnDeleteBookmark {
   }
 }
 `;
+export const onCreateTag = `subscription OnCreateTag {
+  onCreateTag {
+    id
+    name
+    type
+  }
+}
+`;
+export const onUpdateTag = `subscription OnUpdateTag {
+  onUpdateTag {
+    id
+    name
+    type
+  }
+}
+`;
+export const onDeleteTag = `subscription OnDeleteTag {
+  onDeleteTag {
+    id
+    name
+    type
+  }
+}
+`;

@@ -7,11 +7,8 @@ const AddBookMark = (props) => {
     const [bookmarkUrl, setBookmarkUrl] = useState('');
     const [bookmarkDescription, setBookmarkDescription] = useState('');
     const [selectedItems, setSelectedItems] = useState([]);
-    const options = [
-        { value: 'S3', label: 'S3' },
-        { value: 'Auth', label: 'Auth' },
-        { value: 'AWS', label: 'AWS' },
-    ];
+    const options = [];
+    props.tags.map(tag => options.push({'value': tag.name, 'label': tag.name}));
 
     const handleChange = option => {
         setSelectedItems( option );

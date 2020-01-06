@@ -37,3 +37,36 @@ export const deleteBookmark = `mutation DeleteBookmark(
   }
 }
 `;
+export const createTag = `mutation CreateTag(
+  $input: CreateTagInput!
+  $condition: ModelTagConditionInput
+) {
+  createTag(input: $input, condition: $condition) {
+    id
+    name
+    type
+  }
+}
+`;
+export const updateTag = `mutation UpdateTag(
+  $input: UpdateTagInput!
+  $condition: ModelTagConditionInput
+) {
+  updateTag(input: $input, condition: $condition) {
+    id
+    name
+    type
+  }
+}
+`;
+export const deleteTag = `mutation DeleteTag(
+  $input: DeleteTagInput!
+  $condition: ModelTagConditionInput
+) {
+  deleteTag(input: $input, condition: $condition) {
+    id
+    name
+    type
+  }
+}
+`;

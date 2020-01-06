@@ -26,3 +26,22 @@ export const listBookmarks = `query ListBookmarks(
   }
 }
 `;
+export const getTag = `query GetTag($id: ID!) {
+  getTag(id: $id) {
+    id
+    name
+    type
+  }
+}
+`;
+export const listTags = `query ListTags($filter: ModelTagFilterInput, $limit: Int, $nextToken: String) {
+  listTags(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      name
+      type
+    }
+    nextToken
+  }
+}
+`;

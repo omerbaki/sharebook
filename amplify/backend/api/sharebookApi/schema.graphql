@@ -4,3 +4,9 @@ type Bookmark @model {
   description: String
   tags: [String]
 }
+
+type Tag @model {
+  id: ID!
+  name: String!
+  type: String
+}
