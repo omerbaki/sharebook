@@ -5,7 +5,7 @@ import PubSub from '@aws-amplify/pubsub';
 
 import { createBookmark, deleteBookmark, createTag } from './graphql/mutations';
 import { listBookmarks, listTags } from './graphql/queries';
-import { onCreateBookmark, onDeleteBookmark } from './graphql/subscriptions';
+import { onCreateBookmark, onDeleteBookmark, onCreateTag } from './graphql/subscriptions';
 
 import AddBookMark from './components/AddBookMark';
 import AddTag from './components/AddTag';
@@ -16,6 +16,7 @@ import './App.css';
 
 // Action Types
 const QUERY_TAG = "QUERY_TAG";
+const CREATE_TAG = "CREATE_TAG";
 const QUERY_BOOKMARK = 'QUERY_BOOKMARK';
 const CREATE_BOOKMARK = 'CREATE_BOOKMARK';
 const DELETE_BOOKMARK = 'DELETE_BOOKMARK';
@@ -24,23 +25,23 @@ const DELETE_BOOKMARK = 'DELETE_BOOKMARK';
 API.configure(awsconfig);
 PubSub.configure(awsconfig);
 
-
 const initialState = {
   tags: [],
   bookmarks: [],
 };
 
-
 const reducer = (state, action) => {
   switch (action.type) {
     case QUERY_BOOKMARK:
-      return {...state, bookmarks: action.bookmarks};
+      return { ...state, bookmarks: action.bookmarks };
     case CREATE_BOOKMARK:
-      return {...state, bookmarks:[...state.bookmarks, action.bookmark]};
-    case DELETE_BOOKMARK: 
-      return {...state,  bookmarks: state.bookmarks.filter(bookmark => bookmark.id !== action.bookmark.id)};
+      return { ...state, bookmarks: [...state.bookmarks, action.bookmark] };
+    case DELETE_BOOKMARK:
+      return { ...state, bookmarks: state.bookmarks.filter(bookmark => bookmark.id !== action.bookmark.id) };
     case QUERY_TAG:
-      return {...state, tags: action.tags};
+      return { ...state, tags: action.tags };
+    case CREATE_TAG:
+      return { ...state, tags: [...state.tags, action.tag] };
     default:
       return state;
   }
@@ -52,9 +53,9 @@ async function createNewBookmark(bookmark) {
 
 async function deleteExistingBookmark(bookmark) {
   try {
-    const bookmarkToDelete = {id: bookmark.id};
+    const bookmarkToDelete = { id: bookmark.id };
     await API.graphql(graphqlOperation(deleteBookmark, { input: bookmarkToDelete }));
-  } catch(err) {
+  } catch (err) {
     console.log(JSON.stringify(err));
   }
 }
@@ -67,10 +68,10 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [showAddBookmark, setShowAddBookmark] = useState(false);
   const [showAddTag, setShowAddTag] = useState(false);
-  
+
   const handleCloseAddBookmark = () => setShowAddBookmark(false);
   const handleShowAddBookmark = () => setShowAddBookmark(true);
-  const handleSaveBookmark= async (bookmark) => {    
+  const handleSaveBookmark = async (bookmark) => {
     await createNewBookmark(bookmark);
     setShowAddBookmark(false);
   }
@@ -80,7 +81,7 @@ function App() {
 
   const handleCloseAddTag = () => setShowAddTag(false);
   const handleShowAddTag = () => setShowAddTag(true);
-  const handleSaveTag= async (tag) => {    
+  const handleSaveTag = async (tag) => {
     await createNewTag(tag);
     setShowAddTag(false);
   }
@@ -113,10 +114,17 @@ function App() {
       }
     });
 
+    const createTagSubscription = API.graphql(graphqlOperation(onCreateTag)).subscribe({
+      next: (eventData) => {
+        const tag = eventData.value.data.onCreateTag;
+        dispatch({ type: CREATE_TAG, tag });
+      }
+    });
 
     return () => {
       createSubscription.unsubscribe();
       deleteSubscription.unsubscribe();
+      createTagSubscription.unsubscribe();
     }
 
   }, []);
@@ -125,16 +133,16 @@ function App() {
     <div>
       <div className="App">
         <button onClick={handleShowAddBookmark}>Add Bookmark</button>
-        <AddBookMark show={showAddBookmark} onHide={handleCloseAddBookmark} onSave={handleSaveBookmark} tags={state.tags}/>
+        <AddBookMark show={showAddBookmark} onHide={handleCloseAddBookmark} onSave={handleSaveBookmark} tags={state.tags} />
         <button onClick={handleShowAddTag}>Add Tag</button>
-        <AddTag show={showAddTag} onHide={handleCloseAddTag} onSave={handleSaveTag}/>
+        <AddTag show={showAddTag} onHide={handleCloseAddTag} onSave={handleSaveTag} />
       </div>
       <div>
-        {state.bookmarks.length > 0 ? 
-          state.bookmarks.map((bm) => 
-            <BookMark  key={bm.id} bookmark={bm} onDelete={handleDelete}/>
+        {state.bookmarks.length > 0 ?
+          state.bookmarks.map((bm) =>
+            <BookMark key={bm.id} bookmark={bm} onDelete={handleDelete} />
           ) :
-          <p>Add more bookmarks!</p> 
+          <p>Add more bookmarks!</p>
         }
       </div>
     </div>
