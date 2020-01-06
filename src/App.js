@@ -66,6 +66,18 @@ function App() {
     setShowAddTag(false);
   }
 
+  const searchChanged = async e => {
+    var appliedFilter = null;
+    if (e.target.value.length > 0) {
+      appliedFilter = {
+        description: {
+          contains: e.target.value
+        }
+      }
+    }
+    const bookmarksData = await API.graphql(graphqlOperation(listBookmarks, { filter: appliedFilter }));
+    dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
+  }
 
   useEffect(() => {
     async function getTags() {
@@ -112,13 +124,13 @@ function App() {
   return (
     <div className="app-container">
       <div className="App-Logo">
-        <img src={sharebookImg} />
+        <img src={sharebookImg} alt='' />
       </div>
       <div className="bookmarks-container">
         <div className="settings-container">
           <div className="search-container">
             <input type="text" className="form-control"
-              onChange={e => console.log(e)} placeholder="Search..." />
+              onChange={searchChanged} placeholder="Search..." />
           </div>
           <div className="add-buttons">
             <button onClick={handleShowAddBookmark}>Add Bookmark</button>
