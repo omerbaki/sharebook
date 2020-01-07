@@ -27,6 +27,7 @@ PubSub.configure(awsconfig);
 const initialState = {
   tags: [],
   bookmarks: [],
+  loading: true
 };
 
 async function createNewBookmark(bookmark) {
@@ -51,6 +52,7 @@ function App() {
   const [showAddBookmark, setShowAddBookmark] = useState(false);
   const [showAddTag, setShowAddTag] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleCloseAddBookmark = () => setShowAddBookmark(false);
   const handleShowAddBookmark = () => setShowAddBookmark(true);
@@ -76,9 +78,13 @@ function App() {
     }
     getTags();
 
-    async function getBookmarks() {
+    async function getBookmarks(optionsSelected) {
+      setLoading(true);
+
       const bookmarksData = await API.graphql(graphqlOperation(listBookmarks));
       dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
+
+      setLoading(false);
     }
     getBookmarks();
 
@@ -115,6 +121,8 @@ function App() {
   state.tags.map(tag => options.push({ 'value': tag.name, 'label': tag.name }));
 
   const searchChanged = async optionsSelected => {
+    setLoading(true);
+
     setSelectedItems(optionsSelected);
 
     var appliedFilter = null;
@@ -126,6 +134,8 @@ function App() {
 
     const bookmarksData = await API.graphql(graphqlOperation(listBookmarks, { filter: appliedFilter }));
     dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
+    
+    setLoading(false);
   };
 
   return (
@@ -155,7 +165,7 @@ function App() {
             state.bookmarks.map((bm) =>
               <BookMark key={bm.id} bookmark={bm} onDelete={handleDelete} />
             ) :
-            <p>Add more bookmarks!</p>
+            loading? <p>Loading...</p> : <p>Add more bookmarks!</p>
           }
         </div>
       </div>
