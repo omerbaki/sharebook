@@ -3,6 +3,8 @@ import React, { useState, useEffect, useReducer } from 'react';
 import API, { graphqlOperation } from '@aws-amplify/api';
 import PubSub from '@aws-amplify/pubsub';
 
+import Select from 'react-select';
+
 import { createBookmark, deleteBookmark, createTag } from './graphql/mutations';
 import { listBookmarks, listTags } from './graphql/queries';
 import { onCreateBookmark, onDeleteBookmark, onCreateTag } from './graphql/subscriptions';
@@ -48,6 +50,7 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [showAddBookmark, setShowAddBookmark] = useState(false);
   const [showAddTag, setShowAddTag] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
 
   const handleCloseAddBookmark = () => setShowAddBookmark(false);
   const handleShowAddBookmark = () => setShowAddBookmark(true);
@@ -64,19 +67,6 @@ function App() {
   const handleSaveTag = async (tag) => {
     await createNewTag(tag);
     setShowAddTag(false);
-  }
-
-  const searchChanged = async e => {
-    var appliedFilter = null;
-    if (e.target.value.length > 0) {
-      appliedFilter = {
-        description: {
-          contains: e.target.value
-        }
-      }
-    }
-    const bookmarksData = await API.graphql(graphqlOperation(listBookmarks, { filter: appliedFilter }));
-    dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
   }
 
   useEffect(() => {
@@ -121,6 +111,23 @@ function App() {
 
   }, []);
 
+  const options = [];
+  state.tags.map(tag => options.push({ 'value': tag.name, 'label': tag.name }));
+
+  const searchChanged = async optionsSelected => {
+    setSelectedItems(optionsSelected);
+
+    var appliedFilter = null;
+    if (optionsSelected.length > 0) {
+      const filterTags = [];
+      optionsSelected.map(item => filterTags.push({tags: { contains: item.value }}));
+      appliedFilter = { and: filterTags }
+    }
+
+    const bookmarksData = await API.graphql(graphqlOperation(listBookmarks, { filter: appliedFilter }));
+    dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
+  };
+
   return (
     <div className="app-container">
       <div className="App-Logo">
@@ -129,8 +136,12 @@ function App() {
       <div className="bookmarks-container">
         <div className="settings-container">
           <div className="search-container">
-            <input type="text" className="form-control"
-              onChange={searchChanged} placeholder="Search..." />
+            <Select
+              value={selectedItems}
+              onChange={searchChanged}
+              options={options}
+              isMulti={true}
+            />
           </div>
           <div className="add-buttons">
             <button onClick={handleShowAddBookmark}>Add Bookmark</button>
