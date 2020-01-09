@@ -1,12 +1,63 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const onCreateBook = `subscription OnCreateBook {
+  onCreateBook {
+    name
+    bookmarks {
+      items {
+        id
+        url
+        description
+        tags
+      }
+      nextToken
+    }
+  }
+}
+`;
+export const onUpdateBook = `subscription OnUpdateBook {
+  onUpdateBook {
+    name
+    bookmarks {
+      items {
+        id
+        url
+        description
+        tags
+      }
+      nextToken
+    }
+  }
+}
+`;
+export const onDeleteBook = `subscription OnDeleteBook {
+  onDeleteBook {
+    name
+    bookmarks {
+      items {
+        id
+        url
+        description
+        tags
+      }
+      nextToken
+    }
+  }
+}
+`;
 export const onCreateBookmark = `subscription OnCreateBookmark {
   onCreateBookmark {
     id
     url
     description
     tags
+    book {
+      name
+      bookmarks {
+        nextToken
+      }
+    }
   }
 }
 `;
@@ -16,6 +67,12 @@ export const onUpdateBookmark = `subscription OnUpdateBookmark {
     url
     description
     tags
+    book {
+      name
+      bookmarks {
+        nextToken
+      }
+    }
   }
 }
 `;
@@ -25,6 +82,12 @@ export const onDeleteBookmark = `subscription OnDeleteBookmark {
     url
     description
     tags
+    book {
+      name
+      bookmarks {
+        nextToken
+      }
+    }
   }
 }
 `;

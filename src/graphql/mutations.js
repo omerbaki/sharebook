@@ -1,6 +1,60 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const createBook = `mutation CreateBook(
+  $input: CreateBookInput!
+  $condition: ModelBookConditionInput
+) {
+  createBook(input: $input, condition: $condition) {
+    name
+    bookmarks {
+      items {
+        id
+        url
+        description
+        tags
+      }
+      nextToken
+    }
+  }
+}
+`;
+export const updateBook = `mutation UpdateBook(
+  $input: UpdateBookInput!
+  $condition: ModelBookConditionInput
+) {
+  updateBook(input: $input, condition: $condition) {
+    name
+    bookmarks {
+      items {
+        id
+        url
+        description
+        tags
+      }
+      nextToken
+    }
+  }
+}
+`;
+export const deleteBook = `mutation DeleteBook(
+  $input: DeleteBookInput!
+  $condition: ModelBookConditionInput
+) {
+  deleteBook(input: $input, condition: $condition) {
+    name
+    bookmarks {
+      items {
+        id
+        url
+        description
+        tags
+      }
+      nextToken
+    }
+  }
+}
+`;
 export const createBookmark = `mutation CreateBookmark(
   $input: CreateBookmarkInput!
   $condition: ModelBookmarkConditionInput
@@ -10,6 +64,12 @@ export const createBookmark = `mutation CreateBookmark(
     url
     description
     tags
+    book {
+      name
+      bookmarks {
+        nextToken
+      }
+    }
   }
 }
 `;
@@ -22,6 +82,12 @@ export const updateBookmark = `mutation UpdateBookmark(
     url
     description
     tags
+    book {
+      name
+      bookmarks {
+        nextToken
+      }
+    }
   }
 }
 `;
@@ -34,6 +100,12 @@ export const deleteBookmark = `mutation DeleteBookmark(
     url
     description
     tags
+    book {
+      name
+      bookmarks {
+        nextToken
+      }
+    }
   }
 }
 `;
