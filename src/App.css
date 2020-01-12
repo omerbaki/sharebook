@@ -61,3 +61,15 @@
     flex-direction: column;
     align-items: center;
 }
+
+.books-container {
+  width: 100%;
+  text-align: center;
+}
+
+.books-list {
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: #e3e3e3;
+  margin-top: 20px;
+}

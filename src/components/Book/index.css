@@ -1,5 +1,14 @@
 .book-container {
-    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #e3e3e3;
+}
+
+.book-container-selected {
+    background-color: #d7f5fc;
 }
 
 .delete-btn {

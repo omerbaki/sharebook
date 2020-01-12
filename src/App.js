@@ -30,7 +30,8 @@ const initialState = {
 	tags: [],
 	books: [],
 	bookmarks: [],
-	loading: true
+	loading: true,
+	selectedBook: {}
 };
 
 async function createNewBook(book) {
@@ -70,6 +71,7 @@ function App() {
 	const [showAddTag, setShowAddTag] = useState(false);
 	const [selectedItems, setSelectedItems] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [selectedBook, setSelectedBook] = useState({});
 
 	const handleCloseAddBook = () => setShowAddBook(false);
 	const handleShowAddBook = () => setShowAddBook(true);
@@ -79,6 +81,9 @@ function App() {
 	}
 	const handleDeleteBook = async (book) => {
 		await deleteExistingBook(book);
+	}
+	const handleBookSelected = (book) => {
+		setSelectedBook(book);
 	}
 
 	const handleCloseAddBookmark = () => setShowAddBookmark(false);
@@ -183,7 +188,8 @@ function App() {
 					<div className="books-list">
 						{state.books.length > 0 ?
 							state.books.map((book) =>
-								<Book key={book.id} book={book} onDelete={handleDeleteBook} />
+								<Book key={book.id} book={book} onSelected={handleBookSelected} 
+									  onDelete={handleDeleteBook} isSelected={selectedBook.id === book.id} />
 							) :
 							loading ? <p>Loading...</p> : <p>Add more books!</p>
 						}
