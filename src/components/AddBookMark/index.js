@@ -34,7 +34,7 @@ const AddBookMark = (props) => {
     return (
         <Modal show={props.show} onHide={props.onHide}>
             <Modal.Header closeButton>
-                <Modal.Title>Modal title</Modal.Title>
+                <Modal.Title>Add Bookmark</Modal.Title>
             </Modal.Header>
 
             <Modal.Body>

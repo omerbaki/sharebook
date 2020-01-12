@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import './index.css';
 
-const AddTag = (props) => {
-    const [tagName, setTagName] = useState('');
+const AddBookMark = (props) => {
+    const [name, setName] = useState('');
 
     const handleNameChange = e => {
-        setTagName(e.target.value);
+        setName(e.target.value);
     }
 
     const cancelChanges = () => {
@@ -13,20 +14,20 @@ const AddTag = (props) => {
     }
 
     const saveChanges = () => {
-        const newTag = { name: tagName };        
-        props.onSave(newTag);
+        const bookmark = { name: name };        
+        props.onSave(bookmark);
     }
 
     return (
         <Modal show={props.show} onHide={props.onHide}>
             <Modal.Header closeButton>
-                <Modal.Title>Add Tag</Modal.Title>
+                <Modal.Title>Add Book</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                     <div className="form-group">
                         <label>Name</label>
                         <input type="text" className="form-control" 
-                               onChange={handleNameChange} placeholder="" />
+                               onChange={handleNameChange} />
                     </div>
             </Modal.Body>
             <Modal.Footer>
@@ -41,4 +42,4 @@ const AddTag = (props) => {
     );
 }
 
-export default AddTag;
+export default AddBookMark;

@@ -6,6 +6,7 @@ export const createBook = `mutation CreateBook(
   $condition: ModelBookConditionInput
 ) {
   createBook(input: $input, condition: $condition) {
+    id
     name
     bookmarks {
       items {
@@ -24,6 +25,7 @@ export const updateBook = `mutation UpdateBook(
   $condition: ModelBookConditionInput
 ) {
   updateBook(input: $input, condition: $condition) {
+    id
     name
     bookmarks {
       items {
@@ -42,6 +44,7 @@ export const deleteBook = `mutation DeleteBook(
   $condition: ModelBookConditionInput
 ) {
   deleteBook(input: $input, condition: $condition) {
+    id
     name
     bookmarks {
       items {
@@ -65,6 +68,7 @@ export const createBookmark = `mutation CreateBookmark(
     description
     tags
     book {
+      id
       name
       bookmarks {
         nextToken
@@ -83,6 +87,7 @@ export const updateBookmark = `mutation UpdateBookmark(
     description
     tags
     book {
+      id
       name
       bookmarks {
         nextToken
@@ -101,6 +106,7 @@ export const deleteBookmark = `mutation DeleteBookmark(
     description
     tags
     book {
+      id
       name
       bookmarks {
         nextToken

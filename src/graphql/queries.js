@@ -3,6 +3,7 @@
 
 export const getBook = `query GetBook($id: ID!) {
   getBook(id: $id) {
+    id
     name
     bookmarks {
       items {
@@ -23,6 +24,7 @@ export const listBooks = `query ListBooks(
 ) {
   listBooks(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
+      id
       name
       bookmarks {
         nextToken
@@ -39,6 +41,7 @@ export const getBookmark = `query GetBookmark($id: ID!) {
     description
     tags
     book {
+      id
       name
       bookmarks {
         nextToken
@@ -59,6 +62,7 @@ export const listBookmarks = `query ListBookmarks(
       description
       tags
       book {
+        id
         name
       }
     }

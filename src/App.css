@@ -55,3 +55,9 @@
 .search-container {
   width: 500px;
 }
+
+.logo-books-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

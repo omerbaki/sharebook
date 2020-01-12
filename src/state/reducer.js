@@ -1,4 +1,5 @@
 const ACTIONS = {
+    QUERY_BOOK: "QUERY_BOOK",
     QUERY_TAG: "QUERY_TAG",
     CREATE_TAG: "CREATE_TAG",
     QUERY_BOOKMARK: 'QUERY_BOOKMARK',
@@ -8,6 +9,8 @@ const ACTIONS = {
 
 const reducer = (state, action) => {
     switch (action.type) {
+        case ACTIONS.QUERY_BOOK:
+            return { ...state, books: action.books };
         case ACTIONS.QUERY_BOOKMARK:
             return { ...state, bookmarks: action.bookmarks };
         case ACTIONS.CREATE_BOOKMARK:

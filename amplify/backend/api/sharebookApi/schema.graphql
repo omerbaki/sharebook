@@ -1,4 +1,5 @@
 type Book @model {
+  id: ID!
   name: String!
   bookmarks: [Bookmark] @connection
 }

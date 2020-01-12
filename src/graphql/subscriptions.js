@@ -3,6 +3,7 @@
 
 export const onCreateBook = `subscription OnCreateBook {
   onCreateBook {
+    id
     name
     bookmarks {
       items {
@@ -18,6 +19,7 @@ export const onCreateBook = `subscription OnCreateBook {
 `;
 export const onUpdateBook = `subscription OnUpdateBook {
   onUpdateBook {
+    id
     name
     bookmarks {
       items {
@@ -33,6 +35,7 @@ export const onUpdateBook = `subscription OnUpdateBook {
 `;
 export const onDeleteBook = `subscription OnDeleteBook {
   onDeleteBook {
+    id
     name
     bookmarks {
       items {
@@ -53,6 +56,7 @@ export const onCreateBookmark = `subscription OnCreateBookmark {
     description
     tags
     book {
+      id
       name
       bookmarks {
         nextToken
@@ -68,6 +72,7 @@ export const onUpdateBookmark = `subscription OnUpdateBookmark {
     description
     tags
     book {
+      id
       name
       bookmarks {
         nextToken
@@ -83,6 +88,7 @@ export const onDeleteBookmark = `subscription OnDeleteBookmark {
     description
     tags
     book {
+      id
       name
       bookmarks {
         nextToken
