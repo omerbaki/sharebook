@@ -10,11 +10,6 @@
             "StackName": "amplify-sharebook-test-90738",
             "StackId": "arn:aws:cloudformation:us-east-1:705317769236:stack/amplify-sharebook-test-90738/66dc8af0-2c65-11ea-9379-0a99e59b1983",
             "AmplifyAppId": "d253x37vpfpc5c"
-        },
-        "categories": {
-            "auth": {
-                "sharebook68091302": {}
-            }
         }
     }
 }

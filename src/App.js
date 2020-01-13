@@ -5,8 +5,8 @@ import PubSub from '@aws-amplify/pubsub';
 
 import Select from 'react-select';
 
-import { createBook, deleteBook, createBookmark, deleteBookmark, createTag } from './graphql/mutations';
-import { listBooks, listBookmarks, listTags } from './graphql/queries';
+import { createBook, updateBook, deleteBook, createTag } from './graphql/mutations';
+import { listBooks, listTags } from './graphql/queries';
 import { onCreateBookmark, onDeleteBookmark, onCreateTag } from './graphql/subscriptions';
 
 import { reducer, ACTIONS } from './state/reducer';
@@ -29,7 +29,6 @@ PubSub.configure(awsconfig);
 const initialState = {
 	tags: [],
 	books: [],
-	bookmarks: [],
 	loading: true,
 	selectedBook: {}
 };
@@ -38,23 +37,20 @@ async function createNewBook(book) {
 	await API.graphql(graphqlOperation(createBook, { input: book }));
 }
 
+async function updateBookmarks(bookId, newBookmarks) {
+	try {
+	await API.graphql(graphqlOperation(updateBook, 
+		{ input: { id: bookId, bookmarks: newBookmarks } },
+		{ condition : { id: bookId } }));
+	} catch(error) {
+		console.log("Update fialed - " + JSON.stringify(error));
+	}
+}
+
 async function deleteExistingBook(book) {
 	try {
 		const bookToDelete = { id: book.id };
 		await API.graphql(graphqlOperation(deleteBook, { input: bookToDelete }));
-	} catch (err) {
-		console.log(JSON.stringify(err));
-	}
-}
-
-async function createNewBookmark(bookmark) {
-	await API.graphql(graphqlOperation(createBookmark, { input: bookmark }));
-}
-
-async function deleteExistingBookmark(bookmark) {
-	try {
-		const bookmarkToDelete = { id: bookmark.id };
-		await API.graphql(graphqlOperation(deleteBookmark, { input: bookmarkToDelete }));
 	} catch (err) {
 		console.log(JSON.stringify(err));
 	}
@@ -82,18 +78,20 @@ function App() {
 	const handleDeleteBook = async (book) => {
 		await deleteExistingBook(book);
 	}
-	const handleBookSelected = (book) => {
+	const handleBookSelected = async (book) => {
+		if(!book.bookmarks.hasOwnProperty('length')) book.bookmarks = [];
 		setSelectedBook(book);
 	}
 
 	const handleCloseAddBookmark = () => setShowAddBookmark(false);
 	const handleShowAddBookmark = () => setShowAddBookmark(true);
 	const handleSaveBookmark = async (bookmark) => {
-		await createNewBookmark(bookmark);
+		const newBookmarks = selectedBook.bookmarks.concat(bookmark);
+		await updateBookmarks(selectedBook.id, newBookmarks);
 		setShowAddBookmark(false);
 	}
+	
 	const handleDeleteBookmark = async (bookmark) => {
-		await deleteExistingBookmark(bookmark);
 	}
 
 	const handleCloseAddTag = () => setShowAddTag(false);
@@ -106,6 +104,7 @@ function App() {
 	useEffect(() => {
 		async function getBooks() {
 			const booksData = await API.graphql(graphqlOperation(listBooks));
+			console.log("BOOKS - " + JSON.stringify(booksData.data.listBooks.items));
 			dispatch({ type: ACTIONS.QUERY_BOOK, books: booksData.data.listBooks.items });
 		}
 		getBooks();
@@ -115,16 +114,6 @@ function App() {
 			dispatch({ type: ACTIONS.QUERY_TAG, tags: tagsData.data.listTags.items });
 		}
 		getTags();
-
-		async function getBookmarks(optionsSelected) {
-			setLoading(true);
-
-			const bookmarksData = await API.graphql(graphqlOperation(listBookmarks));
-			dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
-
-			setLoading(false);
-		}
-		getBookmarks();
 
 		const createSubscription = API.graphql(graphqlOperation(onCreateBookmark)).subscribe({
 			next: (eventData) => {
@@ -163,15 +152,15 @@ function App() {
 
 		setSelectedItems(optionsSelected);
 
-		var appliedFilter = null;
-		if (optionsSelected.length > 0) {
-			const filterTags = [];
-			optionsSelected.map(item => filterTags.push({ tags: { contains: item.value } }));
-			appliedFilter = { and: filterTags }
-		}
+		// var appliedFilter = null;
+		// if (optionsSelected.length > 0) {
+		// 	const filterTags = [];
+		// 	optionsSelected.map(item => filterTags.push({ tags: { contains: item.value } }));
+		// 	appliedFilter = { and: filterTags }
+		// }
 
-		const bookmarksData = await API.graphql(graphqlOperation(listBookmarks, { filter: appliedFilter }));
-		dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
+		// const bookmarksData = await API.graphql(graphqlOperation(listBookmarks, { filter: appliedFilter }));
+		// dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
 
 		setLoading(false);
 	};
@@ -188,10 +177,10 @@ function App() {
 					<div className="books-list">
 						{state.books.length > 0 ?
 							state.books.map((book) =>
-								<Book key={book.id} book={book} onSelected={handleBookSelected} 
-									  onDelete={handleDeleteBook} isSelected={selectedBook.id === book.id} />
+								<Book key={book.id} book={book} onSelected={handleBookSelected}
+									onDelete={handleDeleteBook} isSelected={selectedBook.id === book.id} />
 							) :
-							loading ? <p>Loading...</p> : <p>Add more books!</p>
+							loading ? <p>Loading books...</p> : <p>Add more books!</p>
 						}
 					</div>
 				</div>
@@ -214,11 +203,13 @@ function App() {
 					</div>
 				</div>
 				<div>
-					{state.bookmarks.length > 0 ?
-						state.bookmarks.map((bm) =>
-							<BookMark key={bm.id} bookmark={bm} onDelete={handleDeleteBookmark} />
-						) :
-						loading ? <p>Loading...</p> : <p>Add more bookmarks!</p>
+					{selectedBook.id ?
+						(selectedBook.bookmarks.length === 0 ?
+							<p>Add bookmarks...</p>	:
+							selectedBook.bookmarks.map((bm) =>
+								<BookMark key={bm.id} bookmark={bm} onDelete={handleDeleteBookmark} />
+							))
+						: <p>Select book!</p>
 					}
 				</div>
 			</div>

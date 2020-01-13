@@ -1,6 +1,6 @@
 {
 	"api": {
-		"sharebookApi": {
+		"sharebookServer": {
 			"service": "AppSync",
 			"providerPlugin": "awscloudformation",
 			"output": {
@@ -17,13 +17,7 @@
 			}
 		}
 	},
-	"auth": {
-		"sharebook68091302": {
-			"service": "Cognito",
-			"providerPlugin": "awscloudformation",
-			"dependsOn": []
-		}
-	},
+	"auth": {},
 	"hosting": {
 		"S3AndCloudFront": {
 			"service": "S3AndCloudFront",

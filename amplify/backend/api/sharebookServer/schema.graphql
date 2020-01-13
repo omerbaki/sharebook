@@ -1,17 +1,15 @@
 type Book @model {
   id: ID!
   name: String!
-  bookmarks: [Bookmark] @connection
+  bookmarks: [Bookmark] @connection(name: "BookBookmarks")
 }
-
 type Bookmark @model {
   id: ID!
   url: String!
   description: String
   tags: [String]
-  book: Book @connection
+  book: Book @connection(name: "BookBookmarks")
 }
-
 type Tag @model {
   id: ID!
   name: String!
