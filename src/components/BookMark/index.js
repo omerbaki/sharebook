@@ -9,14 +9,14 @@ const BookMark = (props) => {
 
     return (
         <div className="bookmark-container">
-            <a href={props.bookmark.url}>{props.bookmark.description}</a>
-            <div className="tags-list">
-                <div className="urlContainer"><span>{props.bookmark.url}</span></div>
-                {props.bookmark.tags ?
-                    props.bookmark.tags.map((tag) =>
-                        <div key={props.bookmark.id + "_" + tag} className="tag"><span>{tag}</span></div>
-                    ) : <div />
-                }
+            <div className="bookmark-info">
+                <a href={props.bookmark.url}>{props.bookmark.description}</a>
+                    <div className="urlContainer"><span>{props.bookmark.url}</span></div>
+                    {props.bookmark.tags ?
+                        props.bookmark.tags.map((tag) =>
+                            <div key={props.bookmark.id + "_" + tag} className="tag"><span>{tag}</span></div>
+                        ) : <div />
+                    }
             </div>
             <Button className="delete-btn" onClick={deleteBookmark}>
                 delete

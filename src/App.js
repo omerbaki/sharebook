@@ -12,11 +12,11 @@ export default function BasicExample() {
           <Route exact path="/">
             <HomePage />
           </Route>
-          <Route path="/my-books">
-            <BooksPage />
-          </Route>
           <Route path="/my-books/:bookId">
             <BookmarksPage />
+          </Route>
+          <Route path="/my-books">
+            <BooksPage />
           </Route>
         </Switch>
     </Router>
