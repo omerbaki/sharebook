@@ -6,7 +6,7 @@ import PubSub from '@aws-amplify/pubsub';
 import Select from 'react-select';
 
 import { createBookmark, deleteBookmark } from '../../graphql/mutations';
-import { listBookmarks, listTags } from '../../graphql/queries';
+import { getBook, listBookmarks, listTags } from '../../graphql/queries';
 import { onCreateBookmark, onDeleteBookmark } from '../../graphql/subscriptions';
 
 import { reducer, ACTIONS } from '../../state/reducer';
@@ -47,7 +47,7 @@ async function deleteExistingBookmark(bookmark) {
 	}
 }
 
-function BookmarksPage() {
+function BookmarksPage(props) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const [showAddBookmark, setShowAddBookmark] = useState(false);
 	const [selectedItems, setSelectedItems] = useState([]);
@@ -56,7 +56,7 @@ function BookmarksPage() {
 	const handleCloseAddBookmark = () => setShowAddBookmark(false);
 	const handleShowAddBookmark = () => setShowAddBookmark(true);
 	const handleSaveBookmark = async (bookmark) => {
-		// bookmark.bookmarkBookId = selectedBook.id;
+		bookmark.bookmarkBookId = props.match.params.bookId;
 		await createNewBookmark(bookmark);
 		setShowAddBookmark(false);
 	}
@@ -69,9 +69,8 @@ function BookmarksPage() {
 		async function getBookmarks() {
 			setLoading(true);
 
-			const bookmarksData = await API.graphql(graphqlOperation(listBookmarks));
-			dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookmarksData.data.listBookmarks.items });
-			console.log("bookmarks - " + JSON.stringify(bookmarksData.data.listBookmarks.items));
+			const bookData = await API.graphql(graphqlOperation(getBook, { id: '3346ea3b-4c23-43a9-baef-997cf1209ec6'}));
+			dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookData.data.getBook.bookmarks.items });
 
 			setLoading(false);
 		}
@@ -132,19 +131,19 @@ function BookmarksPage() {
 					<img src={sharebookImg} alt='' />
 				</div>
 			</div>
-			<div className="settings-container">
-				<div className="search-container">
-					<Select
-						value={selectedItems}
-						onChange={searchChanged}
-						options={options}
-						isMulti={true}
-					/>
-				</div>
-				<div className="add-buttons">
-					<button onClick={handleShowAddBookmark}>Add Bookmark</button>
-					<AddBookmark show={showAddBookmark} onHide={handleCloseAddBookmark} onSave={handleSaveBookmark} tags={state.tags} />
-				</div>
+			<div className="add-buttons">
+				<button onClick={handleShowAddBookmark}>Add Bookmark</button>
+				<AddBookmark show={showAddBookmark} onHide={handleCloseAddBookmark} onSave={handleSaveBookmark} tags={state.tags} />
+			</div>
+
+			<div className="search-container">
+				<Select
+					value={selectedItems}
+					onChange={searchChanged}
+					options={options}
+					isMulti={true}
+					placeholder='search...'
+				/>
 			</div>
 			<div className="bookmarks-list">
 				{loading ?

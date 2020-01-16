@@ -70,8 +70,8 @@ function BooksPage() {
 
 	useEffect(() => {
 		async function getBooks() {
-            const booksData = await API.graphql(graphqlOperation(listBooks));
-            console.log("booksData - " + JSON.stringify(booksData));
+			const booksData = await API.graphql(graphqlOperation(listBooks));
+			console.log("booksData - " + JSON.stringify(booksData));
 			dispatch({ type: ACTIONS.QUERY_BOOK, books: booksData.data.listBooks.items });
 		}
 		getBooks();
@@ -118,20 +118,22 @@ function BooksPage() {
 					<img src={sharebookImg} alt='' />
 				</div>
 				<div className="books-container">
-					<button onClick={handleShowAddBook}>Add Book</button>
-					<AddBook show={showAddBook} onHide={handleCloseAddBook} onSave={handleSaveBook} />
+					<div className="buttons-container">
+						<button onClick={handleShowAddBook}>Add Book</button>
+						<AddBook show={showAddBook} onHide={handleCloseAddBook} onSave={handleSaveBook} />
+						<button onClick={handleShowAddTag}>Add Tag</button>
+						<AddTag show={showAddTag} onHide={handleCloseAddTag} onSave={handleSaveTag} />
+					</div>
 					<div className="books-list">
 						{state.books.length > 0 ?
 							state.books.map((book) =>
-								<Book key={book.id} book={book} onDelete={handleDeleteBook}  />
+								<Book key={book.id} book={book} onDelete={handleDeleteBook} />
 							) :
 							loading ? <p>Loading books...</p> : <p>Add more books!</p>
 						}
 					</div>
 				</div>
 			</div>
-						{/* <button onClick={handleShowAddTag}>Add Tag</button>
-						<AddTag show={showAddTag} onHide={handleCloseAddTag} onSave={handleSaveTag} /> */}
 		</div>
 	);
 }

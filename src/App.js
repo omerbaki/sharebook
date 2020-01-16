@@ -9,15 +9,9 @@ export default function BasicExample() {
   return (
     <Router>
         <Switch>
-          <Route exact path="/">
-            <HomePage />
-          </Route>
-          <Route path="/my-books/:bookId">
-            <BookmarksPage />
-          </Route>
-          <Route path="/my-books">
-            <BooksPage />
-          </Route>
+          <Route exact path="/" component={HomePage} />
+          <Route path="/my-books/:bookId" component={BookmarksPage} />
+          <Route path="/my-books" component={BooksPage} />
         </Switch>
     </Router>
   );
