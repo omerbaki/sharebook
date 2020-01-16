@@ -70,9 +70,10 @@ function BooksPage() {
 
 	useEffect(() => {
 		async function getBooks() {
+			setLoading(true);
 			const booksData = await API.graphql(graphqlOperation(listBooks));
-			console.log("booksData - " + JSON.stringify(booksData));
 			dispatch({ type: ACTIONS.QUERY_BOOK, books: booksData.data.listBooks.items });
+			setLoading(false);
 		}
 		getBooks();
 

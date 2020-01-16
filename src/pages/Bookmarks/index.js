@@ -6,7 +6,7 @@ import PubSub from '@aws-amplify/pubsub';
 import Select from 'react-select';
 
 import { createBookmark, deleteBookmark } from '../../graphql/mutations';
-import { getBook, listBookmarks, listTags } from '../../graphql/queries';
+import { getBook, listTags } from '../../graphql/queries';
 import { onCreateBookmark, onDeleteBookmark } from '../../graphql/subscriptions';
 
 import { reducer, ACTIONS } from '../../state/reducer';
@@ -48,6 +48,8 @@ async function deleteExistingBookmark(bookmark) {
 }
 
 function BookmarksPage(props) {
+	const bookId = props.match.params.bookId;
+
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const [showAddBookmark, setShowAddBookmark] = useState(false);
 	const [selectedItems, setSelectedItems] = useState([]);
@@ -56,7 +58,7 @@ function BookmarksPage(props) {
 	const handleCloseAddBookmark = () => setShowAddBookmark(false);
 	const handleShowAddBookmark = () => setShowAddBookmark(true);
 	const handleSaveBookmark = async (bookmark) => {
-		bookmark.bookmarkBookId = props.match.params.bookId;
+		bookmark.bookmarkBookId = bookId;
 		await createNewBookmark(bookmark);
 		setShowAddBookmark(false);
 	}
@@ -69,7 +71,7 @@ function BookmarksPage(props) {
 		async function getBookmarks() {
 			setLoading(true);
 
-			const bookData = await API.graphql(graphqlOperation(getBook, { id: '3346ea3b-4c23-43a9-baef-997cf1209ec6'}));
+			const bookData = await API.graphql(graphqlOperation(getBook, { id: bookId}));
 			dispatch({ type: ACTIONS.QUERY_BOOKMARK, bookmarks: bookData.data.getBook.bookmarks.items });
 
 			setLoading(false);
@@ -101,7 +103,7 @@ function BookmarksPage(props) {
 			deleteBookmarkSubscription.unsubscribe();
 		}
 
-	}, []);
+	}, [bookId]);
 
 	const options = [];
 	state.tags.map(tag => options.push({ 'value': tag.name, 'label': tag.name }));
